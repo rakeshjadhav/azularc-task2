@@ -10,7 +10,7 @@ use Illuminate\Log\Logger;
     public function getEmployees(){
 
         ### use eloquent model to get all record
-        return EmployeeModel::all();
+        return EmployeeModel::all()->sortByDesc('created_at');
     }
 
     public function getEmployee($empID){

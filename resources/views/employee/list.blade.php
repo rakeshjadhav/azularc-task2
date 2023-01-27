@@ -38,11 +38,11 @@
                                         <td>{{$employee->dob}}</td>
                                         <td>{{$employee->address}}</td>
                                         <td><?php 
-                                            if(isset($employee->photo)){ 
-                                                echo 'Uploaded'; 
-                                              }else {
-                                                echo 'Not Uploaded';
-                                            } ?></td>
+                                            if(isset($employee->photo)){ ?>
+                                            <img src="{{ env('APP_URL') }}/{{$employee->photo}}" alt="" width="50" height="50"> 
+                                             <?php echo 'Uploaded'; }else {
+                                                echo 'Not Uploaded'; 
+                                             }?></td>
                                         <td>
                                             <a employee_id = <?php echo $employee->id;?> class="edit-emp-btn btn btn-primary btn-icon-split" data-toggle="modal">Edit</a>
 
@@ -67,9 +67,9 @@
 
 </div>
 
-{{-- <div id="addEmployeeModal" class="modal fade"> --}}
-    <div class="modal fade " id="addEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    {{-- emplyee add model pupup bootstrap model --}}
+    <div class="modal fade bd-example-modal-xl" id="addEmployeeModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <form id="addEmpForm" enctype="multipart/form-data">
                 <div class="modal-header">						
@@ -77,7 +77,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body">
-                <div id="lblError" class="font-medium text-red-600 alert alert-danger d-none"></div>					
+                <div id="showError" class="font-medium text-red-600 alert alert-danger d-none"></div>					
                     <div class="form-group">
                         <label>Employee Name</label>
                         <input type="text" id="name" name="name" class="form-control" >
@@ -115,9 +115,9 @@
     </div>
 </div>
 
-  <!-- Edit Modal HTML -->
-  <div id="editEmployeeModal" class="modal fade">
-    <div class="modal-dialog">
+ {{-- emplyee edit model pupup bootstrap model --}}
+  <div id="editEmployeeModal" class="modal fade bd-example-modal-xl">
+    <div class="modal-dialog modal-dialog modal-xl">
         <div class="modal-content">
             <form id="editEmployeeForm" emp-id="">
                 <div class="modal-header">						
@@ -125,7 +125,7 @@
                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 </div>
                 <div class="modal-body">
-                <div id="lblError" class="font-medium text-red-600 alert alert-danger d-none"></div>					
+                <div id="showError" class="font-medium text-red-600 alert alert-danger d-none"></div>					
                     <div class="form-group">
                         <label>Employee Name</label>
                         <input type="text" id="name" name="name" class="form-control" >
@@ -163,27 +163,6 @@
         </div>
     </div>
 </div>
-<!-- Delete Modal HTML -->
-<div id="deleteEmployeeModal" class="modal fade">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <form>
-                <div class="modal-header">						
-                    <h4 class="modal-title">Delete Employee</h4>
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                </div>
-                <div class="modal-body">					
-                    <p>Are you sure you want to delete these Records?</p>
-                    <p class="text-warning"><small>This action cannot be undone.</small></p>
-                </div>
-                <div class="modal-footer">
-                    <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
-                    <input type="submit" class="btn btn-danger" value="Delete">
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
 <!-- Bootstrap core JavaScript-->
  <script src="/jquery/jquery.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
@@ -202,9 +181,10 @@
     </script>
 <script>
 
+// onclick submit btn to open employee add form popup model 
 $(document).on("submit", "#addEmpForm", function(e) {
     e.preventDefault(); 
-    var lblError = $("#addEmployeeModal #lblError");
+    var showError = $("#addEmployeeModal #showError");
     var $form = $(this).val();
     console.log($form);
          
@@ -220,8 +200,8 @@ $(document).on("submit", "#addEmpForm", function(e) {
                     location.reload();           
                 },
                 error: function ( xhr, status, error) {
-                            
-                    lblError.removeClass('d-none');
+                        
+                    showError.removeClass('d-none');
                             if(xhr.responseText){
                                 errortoshow = '';
                                 $.each(JSON.parse(xhr.responseText).errors, function (i) {
@@ -229,7 +209,7 @@ $(document).on("submit", "#addEmpForm", function(e) {
                                         errortoshow += val+'<br>';
                                     });
                                 });
-                                lblError.html(errortoshow);
+                                showError.html(errortoshow);
                             }
                         }
                 });
@@ -240,7 +220,9 @@ $(document).on("submit", "#addEmpForm", function(e) {
        
         let _token = $('meta[name="csrf-token"]').attr('content');
         $('[data-toggle="tooltip"]').tooltip();
-    
+
+   // onclick table row btn to delete record 
+
         $('#dataTable tbody').on('click', 'tr td a.delete-btn',function () {
 
             var row_id = $(this).closest('tr').attr('employee_id'); // table row id
@@ -271,7 +253,7 @@ $(document).on("submit", "#addEmpForm", function(e) {
                 data:data,
                 success: function(result){
                     // console.log(result);
-                    // empty first all inputs
+                    // first empty  all inputs
                    $("#editEmployeeForm #name").val('');
                    $("#editEmployeeForm #age").val('');
                    $("#editEmployeeForm #my_date_picker").val('');
@@ -296,14 +278,14 @@ $(document).on("submit", "#addEmpForm", function(e) {
     
     
   
-    
+    // on submit open edit emplyee form with filed id wise details
     $(document).on("submit", "#editEmployeeForm", function(e) {
             e.preventDefault(); 
             // alert (base_url);
             // $(function() {
             //     $( "#my_date_picker" ).datepicker();
             //  });
-            var lblError = $("#editEmployeeForm #lblError");
+            var showError = $("#editEmployeeForm #showError");
             var $form = $(this).attr('emp-id');
             $.ajax({
                     url: base_url+"/update-employees/"+$form,
@@ -317,18 +299,15 @@ $(document).on("submit", "#addEmpForm", function(e) {
                     },
                     error: function ( xhr, status, error) {
                             
-                            console.log( " xhr.responseText: " + xhr.responseText + " //status: " + status + " //Error: "+error );
-                            lblError.removeClass('d-none');
-                            if(xhr.responseText)
-                            {
+                        showError.removeClass('d-none');
+                            if(xhr.responseText){
                                 errortoshow = '';
                                 $.each(JSON.parse(xhr.responseText).errors, function (i) {
                                     $.each(JSON.parse(xhr.responseText).errors[i], function (key, val) {
                                         errortoshow += val+'<br>';
                                     });
                                 });
-                                
-                                lblError.html(errortoshow);
+                                showError.html(errortoshow);
                             }
                         }
                 });
@@ -346,3 +325,8 @@ $(document).on("submit", "#addEmpForm", function(e) {
 <!-- Datepicker -->
 <link href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css' rel='stylesheet' type='text/css'>
 <script src='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js' type='text/javascript'></script>
+<script>
+    $('#dataTable').DataTable({
+        "ordering": false
+    });
+    </script>

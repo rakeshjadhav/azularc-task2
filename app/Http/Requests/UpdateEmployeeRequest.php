@@ -27,9 +27,21 @@ class UpdateEmployeeRequest extends FormRequest
             'name' => 'required|regex:/^[a-zA-Z ]+$/u',
             'age' => 'required|regex:/^[0-9]+$/u',
             'email' => 'required|email',
-            'date_of_birth' => 'required',
+            'date_of_birth' => 'required|date',
             'address' => 'max:300',
             'photo' => 'mimes:jpg,jpeg,bmp,png',
         ];
     }
+
+    public function messages(){
+
+        $messages =  [ 
+             'name.required' => 'Employee name is required',
+             'name.regex' => 'The employee name format is invalid only alphabets and space allowed',
+             'age.required' => 'Employee age is required',
+             'email.required' => 'Employee email is email',
+             'date_of_birth.required' => 'Date of birth is required'
+            ];
+        return $messages;
+      }
 }
