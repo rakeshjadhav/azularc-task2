@@ -23,10 +23,13 @@ class UpdateEmployeeRequest extends FormRequest
      */
     public function rules()
     {
+        $emplyee = $this->route()->parameters();
+        $id = $emplyee['id'];
+        // dd($id);
         return [
             'name' => 'required|regex:/^[a-zA-Z ]+$/u',
             'age' => 'required|regex:/^[0-9]+$/u',
-            'email' => 'required|email',
+            'email' => 'required|email|unique:employee,email,'.$id,
             'date_of_birth' => 'required|date',
             'address' => 'max:300',
             'photo' => 'mimes:jpg,jpeg,bmp,png',
